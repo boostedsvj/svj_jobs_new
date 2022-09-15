@@ -2,9 +2,9 @@ import os, os.path as osp
 
 from jdlfactory_server import data # type: ignore
 
-import seutils  # type: ignore
-from cmssw_interface import CMSSW
-import svj_jobs_toolkit as svj  # type: ignore
+import seutils # type: ignore
+from cmssw_interface import CMSSW # type: ignore
+import svj_jobs_toolkit as svj # type: ignore
 
 cmssw = CMSSW.from_tarball(
     'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/svjproductiontarballs'
@@ -48,16 +48,13 @@ def set_start_step(steps):
     Finds the step at which to start (a previous failed job may have
     already produced some output).
     """
-    start_rootfile = None
-    index = 0
     for step in reversed(steps):
         dst = dst_for_step(step)
         if seutils.isfile(dst):
             index = steps.index(step)
             svj.logger.info('Found %s; Doing remaining steps: %s', dst, steps[index+1:])
-            start_rootfile = dst_for_step(step)
-            break
-    return steps[index+1:], start_rootfile
+            return steps[index+1:], dst_for_step(step)
+    return steps, None
 
 
 def main():
@@ -78,6 +75,7 @@ def main():
     prev_step = None
     prev_rootfile = None
     for step in steps:
+        svj.logger.info('Doing step %s', step)
         try:
             if step == 'TREEMAKER':
                 rootfile = svj.run_treemaker(cmssw_treemaker, rootfile)
@@ -97,7 +95,7 @@ def main():
                     prev_rootfile, dst_for_step(prev_step)
                     )
                 seutils.cp(prev_rootfile, dst_for_step(prev_step))
-                raise
+            raise
         prev_step = step
         prev_rootfile = rootfile
 
