@@ -25,10 +25,10 @@ for rinv in [0.001, .1, .3, .7]:
 from time import strftime
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('-r', '--real', action='store_true')
+parser.add_argument('-g', '--go', action='store_true')
 args = parser.parse_args()
 
-if args.real:
+if args.go:
     group.prepare_for_jobs(strftime('signal_nocuts_%b%d_%H%M%S'))
 else:
     group.run_locally(keep_temp_dir=False)

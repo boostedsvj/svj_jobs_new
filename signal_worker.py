@@ -1,29 +1,26 @@
 import os, os.path as osp
 
-from jdlfactory_server import data # type: ignore
+from jdlfactory_server import data, group_data # type: ignore
 
 import seutils # type: ignore
 from cmssw_interface import CMSSW # type: ignore
 import svj_jobs_toolkit as svj # type: ignore
 
-cmssw = CMSSW.from_tarball(
-    'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/svjproductiontarballs'
-    '/CMSSW_10_6_29_patch1_svjprod_el7_2018UL_b6852b4_May04_withHLTs.tar.gz',
-    dst='.'
-    )
+cmssw = CMSSW.from_tarball(group_data.tarball)
 cmssw_for_hlt = CMSSW(osp.join(cmssw.path, '../HLT/CMSSW_10_2_16_UL/'))
 cmssw_treemaker = CMSSW.from_tarball(
     'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/svjproductiontarballs/'
     'CMSSW_10_6_29_patch1_treemaker_el7_2018_f9c563c_Jun03.tar.gz',
     dst='.'
     )
-
+    
 physics = svj.Physics({
     'year' : 2018,
     'mz' : data.mz,
     'mdark' : data.mdark,
     'rinv' : data.rinv,
     'boost': data.boost,
+    'boostvar' : getattr(data, 'boostvar', 'genjetpt'),
     'max_events' : data.n,
     'part' : data.i
     })
@@ -33,9 +30,9 @@ def dst_for_step(step):
     """Stageout dst for created rootfiles"""
     return (
         '{stageout}/{step}/'
-        'genjetpt{boost:.0f}_mz{mz:.0f}_mdark{mdark:.0f}_rinv{rinv}/{i}.root'
+        '{boostvar}{boost:.0f}_mz{mz:.0f}_mdark{mdark:.0f}_rinv{rinv}/{i}.root'
         .format(
-            stageout = data.stageout,
+            stageout = group_data.stageout,
             step = step.replace('step_', ''),
             i = data.i,
             **physics
@@ -80,8 +77,15 @@ def main():
             if step == 'TREEMAKER':
                 rootfile = svj.run_treemaker(cmssw_treemaker, rootfile)
             elif step == 'step_LHE-GEN':
-                svj.download_madgraph_tarball(cmssw, physics)
-                rootfile = svj.run_step(cmssw, 'step_LHE-GEN', physics, inpre='step0_GRIDPACK')
+                svj.download_madgraph_tarball(cmssw, svj.Physics(physics, max_events=group_data.n_events_gridpack), group_data.tarball_search_path)
+                rootfile = svj.run_step(
+                    cmssw, 'step_LHE-GEN',
+                    svj.Physics(physics, maxEventsIn=group_data.n_events_gridpack),
+                    inpre='step0_GRIDPACK'
+                    )
+                # TODO: Delete this when GEN is no longer needed to save
+                svj.logger.info('Staging out GEN %s -> %s', rootfile, dst_for_step(step))
+                seutils.cp(rootfile, dst_for_step(step))
             else:
                 rootfile = svj.run_step(
                     (cmssw_for_hlt if step=='step_HLT' else cmssw),
