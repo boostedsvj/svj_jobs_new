@@ -31,6 +31,9 @@ python mgtarball_submit.py --mz 250 350 450 --rinv .001 .1 .3 .7 --boost 300 --m
 
 # Oct 25 2022
 python mgtarball_submit.py --mz 150 200 300 400 500 --rinv .001 .1 .3 .7 --boost 300 --mdark 5 10 20 --go
+
+# Oct 26 2022
+python mgtarball_submit.py --mz 550 600 650 --rinv .001 .1 .3 .7 --boost 300 --mdark 5 10 20 --go
 ```
 
 ## Signal production
