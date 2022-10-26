@@ -33,6 +33,6 @@ for mz, rinv, mdark, boost in itertools.product(args.mz, args.rinv, args.mdark, 
         })
 
 if args.go:
-    group.prepare_for_jobs(strftime(f'jobs_mgtarball_{len(group.jobs)}_%b%d_%H%M%S'))
+    group.prepare_for_jobs(strftime('jobs_mgtarball_{}_%b%d_%H%M%S'.format(len(group.jobs))))
 else:
     group.run_locally(keep_temp_dir=False)

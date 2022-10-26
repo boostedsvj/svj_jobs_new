@@ -83,9 +83,9 @@ def main():
                     svj.Physics(physics, maxEventsIn=group_data.n_events_gridpack),
                     inpre='step0_GRIDPACK'
                     )
-                # TODO: Delete this when GEN is no longer needed to save
-                svj.logger.info('Staging out GEN %s -> %s', rootfile, dst_for_step(step))
-                seutils.cp(rootfile, dst_for_step(step))
+                # # TODO: Delete this when GEN is no longer needed to save
+                # svj.logger.info('Staging out GEN %s -> %s', rootfile, dst_for_step(step))
+                # seutils.cp(rootfile, dst_for_step(step))
             else:
                 rootfile = svj.run_step(
                     (cmssw_for_hlt if step=='step_HLT' else cmssw),
