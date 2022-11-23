@@ -23,7 +23,7 @@ def main():
     group.group_data['n_events_gridpack'] = 10000
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mz', type=int, choices=[150, 200, 250, 300, 350, 400, 450, 500], nargs='+')
+    parser.add_argument('--mz', type=int, choices=[150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650], nargs='+')
     parser.add_argument('--rinv', type=float, choices=[.001, .1, .3, .7], nargs='+')
     parser.add_argument('--mdark', type=int, choices=[5, 10, 20], nargs='+')
     parser.add_argument('-n', '--nevents', type=int, default=500)
