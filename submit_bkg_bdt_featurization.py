@@ -70,12 +70,14 @@ def main():
 
     group = jdlfactory.Group.from_file('bkg_bdt_featurization.py')
     group.venv()
+    group.sh('pip install seutils==1.21')
     group.sh('pip install enum')
     group.sh('pip install --ignore-installed --no-cache numpy')
     group.sh('pip install --ignore-installed --no-cache awkward')
     group.sh('pip install svj_ntuple_processing==0.3')
     
     group.htcondor['on_exit_hold'] = '(ExitBySignal == true) || (ExitCode != 0)'
+    group.htcondor['x509userproxy'] = os.environ['X509_USER_PROXY']
 
     group.group_data['modified_preselection'] = bool(args.modifiedpreselection)
     group.group_data['stageout'] = args.stageout
