@@ -1,13 +1,11 @@
-import os, os.path as osp, re
+import os, os.path as osp, re, traceback
 from jdlfactory_server import data, group_data # type: ignore
 import seutils # type: ignore
 import svj_ntuple_processing as svj # type: ignore
 
-# Fixed paths for using GFAL
-GFAL_ENV = {
-    'PYTHONPATH' : 'PYTHONPATH=/cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/3.5/3.5.62-1/el7-x86_64/usr/lib/python2.7/site-packages:/cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/3.5/3.5.62-1/el7-x86_64/usr/lib64/python2.7/site-packages',
-    'PATH' : '/srv/.gwms.d/bin:/storage/local/data1/condor/execute/dir_20643/glide_mqa5I5/main/condor/libexec:/cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/3.5/3.5.62-1/el7-x86_64/usr/bin:/cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/3.5/3.5.62-1/el7-x86_64/usr/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    }
+
+seutils.set_preferred_implementation(group_data.storage_implementation.encode())
+
 
 def metadata_from_path(path):
     """
@@ -134,15 +132,10 @@ def modified_preselection(array):
 
 failed_rootfiles = []
 
-# Use GFAL if the stageout directory does not start with root: (e.g. for UMD)
-storage_implementation = None if group_data.stageout.startswith('root:') else 'gfal'
-env = None if group_data.stageout.startswith('root:') else GFAL_ENV
-
-
 for i, rootfile in enumerate(data.rootfiles):
     try:
         outfile = dst(rootfile)
-        if seutils.isfile(outfile, implementation=storage_implementation, env=env):
+        if seutils.isfile(outfile):
             svj.logger.info('File %s exists, skipping', outfile)
             continue
         svj.logger.info('Processing rootfile %s/%s: %s', i, len(data.rootfiles)-1, rootfile)
@@ -159,18 +152,14 @@ for i, rootfile in enumerate(data.rootfiles):
         array = svj.filter_stitch(array)
         cols = svj.bdt_feature_columns(array)
         # Check again, to avoid race conditions
-        if seutils.isfile(outfile, implementation=storage_implementation, env=env):
+        if seutils.isfile(outfile):
             svj.logger.info('File %s exists now, not staging out', outfile)
             continue
+        cols.save(outfile)
 
-        tmp_outfile = svj.uid() + '.npz'
-        cols.save(tmp_outfile)
-        seutils.cp(tmp_outfile, outfile, implementation=storage_implementation, env=env)
-        os.remove(tmp_outfile)
-
-    except Exception as e:
+    except Exception:
         failed_rootfiles.append(rootfile)
-        svj.logger.error('Error processing %s; continuing. Error:\n%s', rootfile, e)
+        svj.logger.error('Error processing %s; continuing. Error:\n%s', rootfile, traceback.format_exc())
 
 
 if failed_rootfiles:

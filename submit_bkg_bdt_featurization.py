@@ -65,10 +65,12 @@ def main():
     parser.add_argument('--listmissing', action='store_true')
     parser.add_argument('--modifiedpreselection', action='store_true')
     parser.add_argument('--stageout', type=str, help='stageout directory', required=True)
+    parser.add_argument('--impl', type=str, help='storage implementation', default='gfal', choices=['xrd', 'gfal'])
     parser.add_argument('--singlejob', action='store_true', help='Single job for testing.')
     args = parser.parse_args()
 
     group = jdlfactory.Group.from_file('bkg_bdt_featurization.py')
+    group.fix_gfal_env()
     group.venv()
     group.sh('pip install seutils==1.21')
     group.sh('pip install enum')
@@ -77,10 +79,11 @@ def main():
     group.sh('pip install svj_ntuple_processing==0.3')
     
     group.htcondor['on_exit_hold'] = '(ExitBySignal == true) || (ExitCode != 0)'
-    group.htcondor['x509userproxy'] = os.environ['X509_USER_PROXY']
 
     group.group_data['modified_preselection'] = bool(args.modifiedpreselection)
     group.group_data['stageout'] = args.stageout
+    group.group_data['storage_implementation'] = args.impl
+
 
     rootfiles = get_list_of_all_rootfiles()
     # 64249 rootfiles, approx 10s per file means approx 180 CPU hours needed
@@ -136,9 +139,9 @@ def main():
 
     if args.go:
         group.prepare_for_jobs(group_name)
+        os.system('cd {}; condor_submit submit.jdl'.format(group_name))
     else:
         group.run_locally(keep_temp_dir=False)
-        return
 
 
 if __name__ == '__main__':

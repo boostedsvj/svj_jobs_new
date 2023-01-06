@@ -36,12 +36,13 @@ cd bkgbdtfeat_Nov16_103923_missing
 condor_submit submit.jdl
 ```
 
+
 ### Preselection studies
 
 There is a `modified_preselection` function in [bkg_bdt_featurization.py](bkg_bdt_featurization.py). Submit jobs as follows to use the modified_preselection:
 
 ```bash
-python submit_bkg_bdt_featurization.py --modifiedpreselection --stageout davs://hepcms-se2.umd.edu:1094//store/user/thomas.klijnsma/bkg_nov23_modpresel/BDTFEATURES --go
+python submit_bkg_bdt_featurization.py --modifiedpreselection --stageout davs://hepcms-se2.umd.edu:1094//store/user/thomas.klijnsma/bkg_nov23_modpresel/BDTFEATURES --impl gfal --go
 cd bkgbdtfeat_Nov23_173735_modpresel
 condor_submit submit.jdl
 ```
