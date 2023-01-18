@@ -83,14 +83,17 @@ def main():
                     svj.Physics(physics, maxEventsIn=group_data.n_events_gridpack),
                     inpre='step0_GRIDPACK'
                     )
-                # # TODO: Delete this when GEN is no longer needed to save
-                # svj.logger.info('Staging out GEN %s -> %s', rootfile, dst_for_step(step))
-                # seutils.cp(rootfile, dst_for_step(step))
             else:
                 rootfile = svj.run_step(
                     (cmssw_for_hlt if step=='step_HLT' else cmssw),
                     step, physics, in_rootfile=rootfile, inpre=prev_step
                     )
+
+            # Stageout
+            if step in ['step_MINIAOD', 'TREEMAKER']:
+                svj.logger.info('Staging out %s -> %s', rootfile, dst_for_step(step))
+                seutils.cp(rootfile, dst_for_step(step))
+
         except Exception:
             if prev_rootfile:
                 svj.logger.error(
@@ -103,7 +106,5 @@ def main():
         prev_step = step
         prev_rootfile = rootfile
 
-    svj.logger.info('Staging out %s -> %s', rootfile, dst_for_step(step))
-    seutils.cp(rootfile, dst_for_step(step))
 
 main()

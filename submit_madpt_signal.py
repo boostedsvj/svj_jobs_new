@@ -1,3 +1,4 @@
+import os
 from time import strftime
 import argparse, itertools
 import jdlfactory
@@ -14,7 +15,7 @@ def main():
     group.htcondor['on_exit_hold'] = '(ExitBySignal == true) || (ExitCode != 0)'
     group.htcondor['request_memory'] = '4000'
 
-    group.group_data['stageout'] = 'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/orthogonalitystudy/'
+    group.group_data['stageout'] = 'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/signal_madpt300_2023/'
     group.group_data['tarball_search_path'] = 'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/mgtarballs/2022MADPT/'
     group.group_data['tarball'] = (
         'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/svjproductiontarballs/'
@@ -27,7 +28,7 @@ def main():
     parser.add_argument('--rinv', type=float, choices=[.001, .1, .3, .7], nargs='+')
     parser.add_argument('--mdark', type=int, choices=[5, 10, 20], nargs='+')
     parser.add_argument('-n', '--nevents', type=int, default=500)
-    parser.add_argument('--njobs', type=int)
+    parser.add_argument('--njobs', type=int, required=True)
     parser.add_argument('--startseed', type=int, default=0)
     parser.add_argument('-g', '--go', action='store_true')
     args = parser.parse_args()
@@ -46,6 +47,7 @@ def main():
         group_name = strftime('madptsignal_mz{}_rinv{}_mdark{}_%b%d_%H%M%S'.format(mz, rinv, mdark))
         if args.go:
             group.prepare_for_jobs(group_name)
+            os.system('cd {}; condor_submit submit.jdl'.format(group_name))
         else:
             group.run_locally(keep_temp_dir=False)
             return

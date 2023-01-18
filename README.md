@@ -91,4 +91,7 @@ python submit_madpt_signal.py --mz 150 --rinv .1 .3 --mdark 10 --njobs 1000 --go
 # Oct 27 2022
 python submit_madpt_signal.py --mz 550 --rinv .1 .3 --mdark 10 --njobs 1000 --go
 python submit_madpt_signal.py --mz 250 350 --rinv .3 --mdark 10 --njobs 1000 --startseed 1000 --go
+
+# Jan 13 2023: Rerunning with MINIAOD saved
+python submit_madpt_signal.py --mz 200 250 350 450 550 --rinv .1 .3 --mdark 10 --njobs 2000 --startseed 5000 --go
 ```
