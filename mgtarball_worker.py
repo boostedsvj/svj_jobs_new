@@ -1,4 +1,4 @@
-import os, os.path as osp
+import os, os.path as osp, uuid
 
 from jdlfactory_server import data, group_data # type: ignore
 
@@ -35,8 +35,14 @@ def make_mgtarball(cmssw, physics=None, nogridpack=False):
     cmssw.run(['cd SVJ/Production/test', cmd])
     outfile = osp.join(
         cmssw.src, 'SVJ/Production/test',
-        physics.filename('step0_GRIDPACK', ext='.tar.xz')
+        "step0_GRIDPACK_s-channel_mMed-{mz:.0f}_mDark-{mdark:.0f}"
+        "{boost_str}_13TeV-madgraphMLM-pythia8{max_events_str}.tar.xz".format(
+            boost_str=physics.boost_str(),
+            max_events_str=physics.max_events_str(),
+            **physics
+            )
         )
+    # step0_GRIDPACK_s-channel_mMed-250_mDark-10_MADPT300_13TeV-madgraphMLM-pythia8_n-10000.tar.xz
     logger.info('Outfile of gridpack generation: %s', outfile)
     logger.info(os.listdir(osp.join(cmssw.src, 'SVJ/Production/test')))
     return outfile
@@ -52,7 +58,9 @@ def main():
         'max_events' : data.n,
         })
     outfile = make_mgtarball(cmssw, physics)
-    dst = group_data.stageout + osp.basename(outfile)
+
+    # Real stageout
+    dst = group_data.stageout + physics.gridpack_filename()
     svj.logger.info('Staging out %s -> %s', outfile, dst)
     seutils.cp(outfile, dst)
 

@@ -34,6 +34,9 @@ condor_submit submit.jdl
 python submit_bkg_bdt_featurization.py --missing --go --stageout root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/bdt_features/bkg_nov14/BDTFEATURES
 cd bkgbdtfeat_Nov16_103923_missing
 condor_submit submit.jdl
+
+# 11 Feb 2023, fixed the metdphi issue:
+python submit_bkg_bdt_featurization.py --impl xrd --go --stageout root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/bdt_features/bkg_feb11/BDTFEATURES
 ```
 
 
@@ -65,7 +68,7 @@ One job per combination of given mz/rinv/mdark/boost is generated. Default stage
 
 Submitted jobs:
 
-```
+```bash
 # Oct 24 2022
 python mgtarball_submit.py --mz 250 350 450 --rinv .001 .1 .3 .7 --boost 300 --mdark 5 10 20 --go
 
@@ -74,11 +77,14 @@ python mgtarball_submit.py --mz 150 200 300 400 500 --rinv .001 .1 .3 .7 --boost
 
 # Oct 26 2022
 python mgtarball_submit.py --mz 550 600 650 --rinv .001 .1 .3 .7 --boost 300 --mdark 5 10 20 --go
+
+# Feb 15 2023 -- Updated SVJProductions tarball from cms-svj repository
+python mgtarball_submit.py --mz 250 350 --rinv .1 .3 --boost 0 300 --mdark 10 --go
 ```
 
 ## Signal production
 
-```
+```bash
 # Oct 24 2022
 python submit_madpt_signal.py --mz 250 350 450 --rinv .1 .3 --mdark 10 --njobs 400 --go
 
@@ -94,4 +100,7 @@ python submit_madpt_signal.py --mz 250 350 --rinv .3 --mdark 10 --njobs 1000 --s
 
 # Jan 13 2023: Rerunning with MINIAOD saved
 python submit_madpt_signal.py --mz 200 250 350 450 550 --rinv .1 .3 --mdark 10 --njobs 2000 --startseed 5000 --go
+
+# Feb 16: 0-boost run
+python submit_madpt_signal.py --boost 0 --mz 250 350 --rinv .1 .3 --mdark 10 --njobs 2000 --nevents 300 --startseed 0 --go
 ```
