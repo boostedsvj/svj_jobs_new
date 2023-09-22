@@ -6,6 +6,14 @@ import seutils # type: ignore
 from cmssw_interface import CMSSW # type: ignore
 import svj_jobs_toolkit as svj # type: ignore
 
+
+if group_data.scaleunc:
+    svj.logger.info('Setting DO_MG_SYSTEMATICS to True')
+    os.environ['DO_MG_SYSTEMATICS'] = 'true'
+else:
+    svj.logger.info('Not doing scale uncertainties.')
+
+
 cmssw = CMSSW.from_tarball(group_data.tarball)
 cmssw_for_hlt = CMSSW(osp.join(cmssw.path, '../HLT/CMSSW_10_2_16_UL/'))
 cmssw_treemaker = CMSSW.from_tarball(
