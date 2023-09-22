@@ -27,10 +27,10 @@ def main():
     group.htcondor['on_exit_hold'] = '(ExitBySignal == true) || (ExitCode != 0)'
     group.htcondor['request_memory'] = '4000'
 
+    group.group_data['stageout'] = 'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/signal_madpt300_2023/'
     group.group_data['tarball_search_path'] = 'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/mgtarballs/2023MADPT/'
     group.group_data['tarball'] = (
         'root://cmseos.fnal.gov//store/user/lpcdarkqcd/boosted/svjproductiontarballs/'
-        # 'CMSSW_10_6_29_patch1_svjprod_el7_2018UL_kpedro88_madpt_withHLT_85c685d_Oct11.tar.gz'
         'CMSSW_10_6_29_patch1_svjprod_el7_2018UL_cms-svj_Run2_UL_withHLT_996c8dc_Jan18.tar.gz'
         )
     group.group_data['n_events_gridpack'] = 10000
