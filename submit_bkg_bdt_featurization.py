@@ -76,7 +76,7 @@ def main():
     group.sh('pip install enum')
     group.sh('pip install --ignore-installed --no-cache numpy')
     group.sh('pip install --ignore-installed --no-cache awkward')
-    group.sh('pip install svj_ntuple_processing==0.3')
+    group.sh('pip install "svj_ntuple_processing>=0.8"')
     
     group.htcondor['on_exit_hold'] = '(ExitBySignal == true) || (ExitCode != 0)'
 
